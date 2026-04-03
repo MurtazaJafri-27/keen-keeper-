@@ -75,8 +75,8 @@ client.on('messageCreate', async message => {
         messageCounts.set(id, currentCounts);
 
         let level = 0;
-        if (currentCounts >= 5) level = 1;
-        if(currentCounts >= 10) level = 2;
+        if (currentCounts >= 10) level = 2;
+        if(currentCounts >= 5) level = 1;
 
         // Level Up Alert
         if (currentCounts === 5) {
@@ -108,7 +108,7 @@ client.on('messageCreate', async message => {
         const id = message.author.id;
         const currentCounts = messageCounts.get(id) || 0;
         let level = 0;
-        if(currentCounts >= 5){
+        if(currentCounts >= 10){
             level = 2;
         }
         else if(currentCounts >= 5){
