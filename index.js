@@ -30,24 +30,28 @@ client.on('messageDelete', message => {
 // MEMBER KICKING
 
 client.on('guildMemberRemove', async member => {
-    const channel = member.guild.channels.cache.find(ch => ch.name === 'keen-keepers-logs')
+    const channel = member.guild.channels.cache.find(ch => ch.name === 'keen-keepers-logs');
+    if (!channel) return;
 
-    if(!channel) return;
-
-    const auditLogs = await member.guild.fetchAuditLogs({ type : 20, limit : 1});
+    const auditLogs = await member.guild.fetchAuditLogs({ type: 20, limit: 1 });
     const kickLog = auditLogs.entries.first();
 
-    if(kickLog && kickLog.target.id === member.user.id){
-        const title = `✍️ A Member was kicked by ${kickLog.executor.id}`;
+    let title = '👢 A Member left the server';
+    let description = `**Member** : ${member.user.username}`;
+
+    if (kickLog && kickLog.target.id === member.user.id) {
+        title = '👢 A Member was Kicked';
+        description += `\n**Kicked by** : ${kickLog.executor.username}`;
     }
 
     const embed = new EmbedBuilder()
     .setTitle(title)
-    .setDescription(`User : ${member.user.id} was kicked by ${kickLog.executor.id}`)
-    .setColor('FF2908')
-    .setFooter(`*The Keen Keeper has recorded it.*`)
+    .setDescription(description)
+    .setColor('#FF2908')
+    .setFooter({ text: `*The Keen Keeper has recorded it.*` })
+    .setTimestamp()
 
-    channel.send({ embeds : embed})
+    channel.send({ embeds: [embed] });
 });
 
 client.login(process.env.TOKEN);
