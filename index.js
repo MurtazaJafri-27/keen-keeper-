@@ -1,105 +1,153 @@
 require('dotenv').config();
+const { Client, GatewayIntentBits, EmbedBuilder, Partials, ActivityType } = require('discord.js');
 
-const { Client, GatewayIntentBits, EmbedBuilder, ActivityType, Embed } = require('discord.js');
-
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildModeration]});
-
-client.on('ready', () => {
-    console.log(`Your bot has booted up! ${client.user.tag}`)
-    client.user.setPresence({ status : 'online'});
+const client = new Client({ 
+    intents: [
+        GatewayIntentBits.Guilds, 
+        GatewayIntentBits.GuildMessages, 
+        GatewayIntentBits.MessageContent, 
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildModeration
+    ],
+    partials: [Partials.Message, Partials.Channel, Partials.GuildMember] 
 });
 
+const messageCounts = new Map();
+
+client.on('ready', () => {
+    console.log(`Your bot has booted up! ${client.user.tag}`);
+    client.user.setActivity('Recording Deeds' , { type : ActivityType.Watching});
+});
 
 // MESSAGE DELETION
-
-client.on('messageDelete', message => {
+client.on('messageDelete', async message => {
+    if (message.partial) {
+        try { await message.fetch(); } catch (e) { return; }
+    }
     const channel = message.guild.channels.cache.find(ch => ch.name === 'keen-keepers-logs');
-
-    if(!channel) return;
+    if (!channel) return;
 
     const embed = new EmbedBuilder()
-    .setTitle('✍️ A Message was deleted.')
-    .setDescription(`**Author** : ${message.author.username} \n**Message** : ${message.content}`)
-    .setColor('#9300A3')
-    .setFooter({ text : `The Keen Keeper has recorded it.`})
+        .setTitle('✍️ A Message was deleted.')
+        .setDescription(`**Author** : ${message.author?.username || "Unknown"} \n**Message** : ${message.content || "No content"}`)
+        .setColor('#9300A3')
+        .setFooter({ text: `The Keen Keeper has recorded it.` });
 
     channel.send({ embeds: [embed] });
 });
 
-// MEMBER KICKING
+// MESSAGE TRACKING & LEVELING
+client.on('messageCreate', async message => {
+    if (message.author.bot || !message.guild) return;
+
+    // 1. Define the specific channel where media counts
+    const libraryChannel = message.guild.channels.cache.find(ch => ch.name === '📸︱keepers-library');
+    if (!libraryChannel) return;
+
+    // 2. Only run the counter if the message is in THAT channel AND has a file/image
+    if (message.channel.id === libraryChannel.id && message.attachments.size > 0) {
+        
+        const id = message.author.id;
+        let currentCounts = messageCounts.get(id) || 0;
+        currentCounts++;
+        messageCounts.set(id, currentCounts);
+
+        let level = 0;
+        if (currentCounts >= 5) level = 1;
+        if(currentCounts >= 10) level = 2;
+
+        // Level Up Alert
+        if (currentCounts === 5) {
+            const levelEmbed = new EmbedBuilder()
+                .setTitle(`📈 ${message.author.username} leveled up to level ${level}`)
+                .setDescription(`Congrats! Your media contributions earned you 4-player voice chat access. ⏫`)
+                .setColor('#0AEBFF')
+                .setFooter({ text: 'Your work inspires me...' });
+
+            libraryChannel.send({ embeds: [levelEmbed] });
+        }
+        if (currentCounts === 10) {
+            const levelEmbed = new EmbedBuilder()
+                .setTitle(`📈 ${message.author.username} leveled up to level ${level}`)
+                .setDescription(`You can now send media in **the Veil*** ⏫`)
+                .setColor('#0AEBFF')
+                .setFooter({ text: 'Your work inspires me...' });
+
+            libraryChannel.send({ embeds: [levelEmbed] });
+        }
+    }
+
+    // 3. Keep the level check command working anywhere (or only in specific channels)
+    if (message.content === 'kk level') {
+        const id = message.author.id;
+        const currentCounts = messageCounts.get(id) || 0;
+        const level = currentCounts >= 5 ? 5 : 0;
+
+        const checkLevel = new EmbedBuilder()
+            .setTitle(`Username : ***${message.author.username}***`)
+            .setDescription(`Level : ${level}\nMedia Sent: ${currentCounts}`)
+            .setColor('#0AEBFF');
+
+        message.channel.send({ embeds: [checkLevel] });
+    }
+});
+// KICKING
 client.on('guildMemberRemove', async member => {
     try {
         const channel = member.guild.channels.cache.find(ch => ch.name === 'keen-keepers-logs');
-        if (!channel) {
-            console.log('Channel not found');
-            return;
-        }
+        if (!channel) return;
 
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
+        await new Promise(resolve => setTimeout(resolve, 2000));
         const auditLogs = await member.guild.fetchAuditLogs({ type: 20, limit: 1 });
         const kickLog = auditLogs.entries.first();
-        console.log('kickLog:', kickLog);
 
         let title = '👢 A Member left the server';
         let description = `**Member** : ${member.user.username}`;
 
         if (kickLog && kickLog.target.id === member.user.id) {
             title = `👢 ${member.user.username} was KICKED by ${kickLog.executor.username}`;
-            description += `\n**Kicked by** : ${kickLog.executor.username}`;
             description += `\n**Reason** : ${kickLog.reason || 'No reason provided'}`;
-        }
-
-        const embed = new EmbedBuilder()
-        .setTitle(title)
-        .setDescription(description)
-        .setColor('#FF2908')
-        .setFooter({ text: `The Keen Keeper has recorded it.` })
-        .setTimestamp()
-
-        channel.send({ embeds: [embed] });
-    } catch (error) {
-        console.error('Error:', error);
-    }
-});
-
-client.on('guildBanAdd', async ban => { // 'ban' is a GuildBan object
-    try {
-        // 1. Find the log channel
-        const channel = ban.guild.channels.cache.find(ch => ch.name === 'keen-keepers-logs');
-        if (!channel) return;
-
-        // 2. Wait 1 second for the Audit Log to catch up
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // 3. Fetch the latest ban log (Type 22 is MEMBER_BAN_ADD)
-        const fetchedLogs = await ban.guild.fetchAuditLogs({
-            limit: 1,
-            type: 22, 
-        });
-
-        const banLog = fetchedLogs.entries.first();
-        
-        let title = `🚫 A User was banned.`;
-        let description = `No reason provided.`;
-
-        // 4. Verify the log matches the user being banned
-        if (banLog && banLog.target.id === ban.user.id) {
-            const { executor, reason } = banLog;
-            title = `🚫 ${ban.user.username} was BANNED`;
-            description = `**User:** ${ban.user.tag}\n**By:** ${executor.username}\n**Reason:** ${reason || "No particular reason given."}`;
         }
 
         const embed = new EmbedBuilder()
             .setTitle(title)
             .setDescription(description)
+            .setColor('#FF2908')
+            .setFooter({ text: `The Keen Keeper has recorded it.` })
+            .setTimestamp();
+
+        channel.send({ embeds: [embed] });
+    } catch (error) { console.error(error); }
+});
+
+// BANNING
+client.on('guildBanAdd', async ban => {
+    try {
+        const channel = ban.guild.channels.cache.find(ch => ch.name === 'keen-keepers-logs');
+        if (!channel) return;
+
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const fetchedLogs = await ban.guild.fetchAuditLogs({ limit: 1, type: 22 });
+        const banLog = fetchedLogs.entries.first();
+        
+        let title = `🚫 A User was banned.`;
+        let description = `**User:** ${ban.user.tag}`;
+
+        if (banLog && banLog.target.id === ban.user.id) {
+            title = `🚫 ${ban.user.username} was BANNED by ${banLog.executor.username}`;
+            description += `\n**Reason:** ${banLog.reason || "No particular reason given."}`;
+        }
+
+        const embed = new EmbedBuilder()
+            .setTitle(title)
+            .setDescription(description)
+            .setThumbnail('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJndXhieHptbW56bmRiaHpxbmZxeHptbW56bmRiaHpxbmZxeHptJmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/fe3NDdz8WPAcnIIIFM/giphy.gif')
             .setColor('#A80000')
             .setFooter({ text: `Keen Keeper has recorded it.` }) 
             .setTimestamp();
 
         await channel.send({ embeds: [embed] });
-    } catch (error) {
-        console.error('Ban Log Error:', error);
-    }
+    } catch (error) { console.error(error); }
 });
+
 client.login(process.env.TOKEN);
