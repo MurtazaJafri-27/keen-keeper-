@@ -86,10 +86,10 @@ client.on('messageCreate', async message => {
         const id = message.author.id;
         const currentCounts = messageCounts.get(id) || 0;
         let level = 0;
-        if(currentCounts > 5){
+        if(currentCounts >= 5){
             level = 1;
         }
-        else if(currentCounts > 10){
+        else if(currentCounts >= 10){
             level = 2;
         }
 
