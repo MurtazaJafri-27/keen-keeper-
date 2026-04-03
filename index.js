@@ -179,6 +179,8 @@ client.on('guildBanAdd', async ban => {
     } catch (error) { console.error(error); }
 });
 
+// LAST KICK
+
 client.on('messageCreate', async message => {
       if(message.content === 'kk lastkick'){
           const auditLogs = await message.guild.fetchAuditLogs({ type : 20, limit : 1});
@@ -187,4 +189,16 @@ client.on('messageCreate', async message => {
           message.reply(`Last User Kicked : **${kickLogs.target.username}** \n By : **${kickLogs.executor.username}**`);
       }
 })
+
+// LAST BAN
+
+client.on('messageCreate', async message => {
+      if(message.content === 'kk lastban'){
+          const auditLogs = await message.guild.fetchAuditLogs({ type : 22, limit : 1});
+          const banLogs = await auditLogs.entries.first();
+
+          message.reply(`Last User Banned : **${banLogs.target.username}** \n By : **${banLogs.executor.username}**`);
+      }
+})
+
 client.login(process.env.TOKEN);
