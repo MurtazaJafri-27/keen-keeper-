@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const { Client, GatewayIntentBits, EmbedBuilder, ActivityType, Embed } = require('discord.js');
-const { title } = require('node:process');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers]});
 
