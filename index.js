@@ -184,7 +184,7 @@ client.on('messageCreate', async message => {
           const auditLogs = await message.guild.fetchAuditLogs({ type : 20, limit : 1});
           const kickLogs = await auditLogs.entries.first();
 
-          message.reply(`Last User Kicked : **${kickLogs.target.username}** \n By : **${kickLogs.executor.username}`);
+          message.reply(`Last User Kicked : **${kickLogs.target.username}** \n By : **${kickLogs.executor.username}**`);
       }
 })
 client.login(process.env.TOKEN);
