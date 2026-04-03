@@ -85,7 +85,6 @@ client.on('messageCreate', async message => {
     if (message.content === 'kk level') {
         const id = message.author.id;
         const currentCounts = messageCounts.get(id) || 0;
-        const level = currentCounts >= 5 ? 5 : 0;
 
         const checkLevel = new EmbedBuilder()
             .setTitle(`Username : ***${message.author.username}***`)
