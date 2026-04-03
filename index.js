@@ -29,7 +29,10 @@ client.on('messageCreate', async message => {
         .setTitle(`🤝 KEEN KEEPER HEARS YOU! ❓`)
         .setDescription(`What do you need help with? \n\n
             **kk level** : Shows your current level based on how many attachments you've sent.
-            [only records them in keepers library]
+            [only records them in keepers library] \n
+            \t\t**[STAFF ONLY]**
+            **kk lastkick** : Shows the last person kicked and who kicked them. \n
+            **kk lastban** : Shows the last person banned and who banned them.
             `)
         .setColor('#8B27F5')
         .setFooter({ text : 'Fret not.'})
