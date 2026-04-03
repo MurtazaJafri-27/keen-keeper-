@@ -191,7 +191,7 @@ client.on('messageCreate', async message => {
 
           message.reply(`Last User Kicked : **${kickLogs.target.username}** \n By : **${kickLogs.executor.username}**`);
       }
-      else if(message.content === 'kk lastkick' && message.member.roles.cache.some(role => role.name !== '😈 Doomseekers')) {
+      else if(message.content === 'kk lastkick' && message.member.roles.cache.some(role => role.name !== '😈 Doomseekers')){
         message.reply(`You are not from among the Doomseekers... Primodrian.`)
       }
 })
@@ -205,7 +205,7 @@ client.on('messageCreate', async message => {
 
           message.reply(`Last User Banned : **${banLogs.target.username}** \n By : **${banLogs.executor.username}**`);
       }
-      else if(message.content === 'kk lastkick' && message.member.roles.cache.some(role => role.name !== '😈 Doomseekers')){
+      else if(message.content === 'kk lastban' && message.member.roles.cache.some(role => role.name !== '😈 Doomseekers')){
         message.reply(`You are not from among the Doomseekers... Primodrian.`)
       }
 })
