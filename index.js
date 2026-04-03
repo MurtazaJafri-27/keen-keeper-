@@ -28,7 +28,7 @@ client.on('messageCreate', async message => {
         const embed = new EmbedBuilder()
         .setTitle(`🤝 KEEN KEEPER HEARS YOU! ❓`)
         .setDescription(`What do you need help with? \n\n
-            **kk level** : Shows your current level based on how many attachments you've sent.\n
+            **kk level** : Shows your current level based on how many attachments you've sent.
             [only records them in keepers library]
             `)
         .setColor('#8B27F5')
