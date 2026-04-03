@@ -28,7 +28,6 @@ client.on('messageDelete', message => {
 });
 
 // MEMBER KICKING
-
 client.on('guildMemberRemove', async member => {
     const channel = member.guild.channels.cache.find(ch => ch.name === 'keen-keepers-logs');
     if (!channel) return;
@@ -40,8 +39,9 @@ client.on('guildMemberRemove', async member => {
     let description = `**Member** : ${member.user.username}`;
 
     if (kickLog && kickLog.target.id === member.user.id) {
-        title = '👢 A Member was Kicked';
+        title = `👢 ${member.user.username} was KICKED by ${kickLog.executor.username}`;
         description += `\n**Kicked by** : ${kickLog.executor.username}`;
+        description += `\n**Reason** : ${kickLog.reason || 'No reason provided'}`;
     }
 
     const embed = new EmbedBuilder()
