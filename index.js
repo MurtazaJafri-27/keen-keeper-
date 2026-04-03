@@ -30,8 +30,8 @@ client.on('messageCreate', async message => {
         .setDescription(`What do you need help with? \n\n
             **kk level** : Shows your current level based on how many attachments you've sent.
             [only records them in keepers library] \n
-            \t\t**[STAFF ONLY]**
-            **kk lastkick** : Shows the last person kicked and who kicked them. \n
+            \t\t\t**[STAFF ONLY]**\n
+            **kk lastkick** : Shows the last person kicked and who kicked them. 
             **kk lastban** : Shows the last person banned and who banned them.
             `)
         .setColor('#8B27F5')
@@ -108,11 +108,11 @@ client.on('messageCreate', async message => {
         const id = message.author.id;
         const currentCounts = messageCounts.get(id) || 0;
         let level = 0;
-        if(currentCounts >= 5){
-            level = 1;
-        }
-        else if(currentCounts >= 10){
+        if(currentCounts >= 10){
             level = 2;
+        }
+        else if(currentCounts >= 5){
+            level = 1;
         }
 
         const checkLevel = new EmbedBuilder()
@@ -185,13 +185,13 @@ client.on('guildBanAdd', async ban => {
 // LAST KICK
 
 client.on('messageCreate', async message => {
-      if(message.content === 'kk lastkick' && message.author.roles === '😈 Doomseekers'){
+      if(message.content === 'kk lastkick' && message.member.roles.cache.some(role => role.name === '😈 Doomseekers')){
           const auditLogs = await message.guild.fetchAuditLogs({ type : 20, limit : 1});
           const kickLogs = await auditLogs.entries.first();
 
           message.reply(`Last User Kicked : **${kickLogs.target.username}** \n By : **${kickLogs.executor.username}**`);
       }
-      else {
+      else if(message.content === 'kk lastkick' && message.member.roles.cache.some(role => role.name === '😈 Doomseekers')) {
         message.reply(`You are not from among the Doomseekers... Primodrian.`)
       }
 })
@@ -199,15 +199,15 @@ client.on('messageCreate', async message => {
 // LAST BAN
 
 client.on('messageCreate', async message => {
-      if(message.content === 'kk lastban' && message.author.roles === '😈 Doomseekers'){
+      if(message.content === 'kk lastban' && message.member.roles.cache.some(role => role.name === '😈 Doomseekers')){
           const auditLogs = await message.guild.fetchAuditLogs({ type : 22, limit : 1});
           const banLogs = await auditLogs.entries.first();
 
           message.reply(`Last User Banned : **${banLogs.target.username}** \n By : **${banLogs.executor.username}**`);
       }
-      else {
+      else if(message.content === 'kk lastban' && message.member.roles.cache.some(role => role.name === '😈 Doomseekers')) {
         message.reply(`You are not from among the Doomseekers... Primodrian.`)
-      }o
+      }
 })
 
 client.login(process.env.TOKEN);
