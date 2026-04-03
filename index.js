@@ -60,11 +60,13 @@ client.on('messageCreate', async message => {
         if (currentCounts === 5) {
             const levelEmbed = new EmbedBuilder()
                 .setTitle(`📈 ${message.author.username} leveled up to level ${level}`)
-                .setDescription(`Congrats! Your media contributions earned you 4-player voice chat access. ⏫`)
+                .setDescription(`Congrats! You can now enter 4-player private voice chats **[The Primordian Retreat]**⏫`)
                 .setColor('#0AEBFF')
                 .setFooter({ text: 'Your work inspires me...' });
 
             libraryChannel.send({ embeds: [levelEmbed] });
+            const role1 = message.guild.roles.cache.find(r => r.name === '1');
+            message.member.roles.add(role1);
         }
         if (currentCounts === 10) {
             const levelEmbed = new EmbedBuilder()
@@ -74,6 +76,8 @@ client.on('messageCreate', async message => {
                 .setFooter({ text: 'Your work inspires me...' });
 
             libraryChannel.send({ embeds: [levelEmbed] });
+            const role2 = message.guild.roles.cache.find(r => r.name === '2');
+            message.member.roles.add(role2);
         }
     }
 
