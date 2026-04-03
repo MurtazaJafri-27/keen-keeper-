@@ -108,7 +108,7 @@ client.on('messageCreate', async message => {
         const id = message.author.id;
         const currentCounts = messageCounts.get(id) || 0;
         let level = 0;
-        if(currentCounts >= 10){
+        if(currentCounts >= 5){
             level = 2;
         }
         else if(currentCounts >= 5){
@@ -205,7 +205,7 @@ client.on('messageCreate', async message => {
 
           message.reply(`Last User Banned : **${banLogs.target.username}** \n By : **${banLogs.executor.username}**`);
       }
-      else if(message.content === 'kk lastban' && message.member.roles.cache.some(role => role.name === '😈 Doomseekers')) {
+      else if(message.content === 'kk lastkick' && message.member.roles.cache.some(role => role.name === '😈 Doomseekers')){
         message.reply(`You are not from among the Doomseekers... Primodrian.`)
       }
 })
