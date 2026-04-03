@@ -19,6 +19,25 @@ client.on('ready', () => {
     client.user.setActivity('Recording Deeds' , { type : ActivityType.Watching});
 });
 
+// HELP
+
+client.on('messageCreate', async message => {
+    const channel = message.channel;
+
+    if(message.content === 'kk help'){
+        const embed = new EmbedBuilder()
+        .setTitle(`🤝 KEEN KEEPER HEARS YOU! ❓`)
+        .setDescription(`What do you need help with? \n\n
+            **kk level** : Shows your current level based on how many attachments you've sent.\n
+            [only records them in keepers library]
+            `)
+        .setColor('#8B27F5')
+        .setFooter({ text : 'Fret not.'})
+
+        channel.send({ embeds : [embed]});
+    }
+});
+
 // MESSAGE DELETION
 client.on('messageDelete', async message => {
     if (message.partial) {
