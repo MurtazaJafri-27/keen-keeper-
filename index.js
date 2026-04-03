@@ -1,10 +1,12 @@
+require('dotenv').config();
+
 const { Client, GatewayIntentBits, EmbedBuilder, ActivityType } = require('discord.js');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers]});
 
 client.on('ready', () => {
     console.log(`Your bot has booted up! ${client.user.tag}`)
-    client.user.setPresence({ status : 'online'})
+    client.user.setPresence({ status : 'online'});
 });
 
 client.on('messageDelete', message => {
