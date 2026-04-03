@@ -4,6 +4,7 @@ const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBit
 
 client.on('ready', () => {
     console.log(`Your bot has booted up! ${client.user.tag}`)
+    client.user.setPresence({ status : 'online'})
 });
 
 client.on('messageDelete', message => {
