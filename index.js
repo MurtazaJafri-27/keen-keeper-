@@ -185,23 +185,29 @@ client.on('guildBanAdd', async ban => {
 // LAST KICK
 
 client.on('messageCreate', async message => {
-      if(message.content === 'kk lastkick'){
+      if(message.content === 'kk lastkick' && message.author.roles === '😈 Doomseekers'){
           const auditLogs = await message.guild.fetchAuditLogs({ type : 20, limit : 1});
           const kickLogs = await auditLogs.entries.first();
 
           message.reply(`Last User Kicked : **${kickLogs.target.username}** \n By : **${kickLogs.executor.username}**`);
+      }
+      else {
+        message.reply(`You are not from among the Doomseekers... Primodrian.`)
       }
 })
 
 // LAST BAN
 
 client.on('messageCreate', async message => {
-      if(message.content === 'kk lastban'){
+      if(message.content === 'kk lastban' && message.author.roles === '😈 Doomseekers'){
           const auditLogs = await message.guild.fetchAuditLogs({ type : 22, limit : 1});
           const banLogs = await auditLogs.entries.first();
 
           message.reply(`Last User Banned : **${banLogs.target.username}** \n By : **${banLogs.executor.username}**`);
       }
+      else {
+        message.reply(`You are not from among the Doomseekers... Primodrian.`)
+      }o
 })
 
 client.login(process.env.TOKEN);
