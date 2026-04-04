@@ -98,8 +98,10 @@ client.on('messageCreate', async message => {
                 .setFooter({ text: 'Your work inspires me...' });
 
             libraryChannel.send({ embeds: [levelEmbed] });
+            const role1 = message.guild.roles.cache.find(r => r.name === '1');
             const role2 = message.guild.roles.cache.find(r => r.name === '2');
-            message.member.roles.add(role2);
+            message.member.roles.add(role2)
+            message.member.roles.remove(role1);
         }
     }
 
